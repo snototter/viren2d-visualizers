@@ -3,14 +3,16 @@ import numpy as np
 import viren2d
 import logging
 
+#TODO remove debug timings
+from vito import pyutils
+
 
 class VisualizationPipeline(object):
     """
     Sets up a visualization pipeline which you can apply to simplify
     visualizing a stream of images.
 
-    For example, overlay frame information for each frame of a camera
-    stream or video:
+    Example: Overlay timestamps for a video:
 
     >>> from visualizers.pipeline import VisualizationPipeline
     >>> from visualizers.text_overlay import TextOverlay, frame_label
@@ -72,24 +74,33 @@ class VisualizationPipeline(object):
         if image is None:
             return None
 
+        pyutils.tic('painter-setup')
         # Suppress viren2d warnings if we have non-contiguous or non-mutable inputs:
-        copy = True if (not image.flags.c_contiguous) or (not image.flags.writeable) else False
-        buffer = viren2d.ImageBuffer(image, copy)
-        self._painter.set_canvas_image(buffer)
+        # copy = True if (not image.flags.c_contiguous) or (not image.flags.writeable) else False
+        # buffer = viren2d.ImageBuffer(image, copy)
+        # self._painter.set_canvas_image(buffer)
+        self._painter.set_canvas_image(image)
+        pyutils.toc('painter-setup')
 
+        # pyutils.tic('sanity-check')
         # Warn the user about potential typos
         for k in visualizer_args.keys():
             if k not in self._identifiers:
                 logging.warning(
                     f'Visualizer "{k}" has not been registered, but its parameters '
                     'are provided - check calling code for potential typo.')
+        # pyutils.toc('sanity-check')
 
         # Apply all configured visualizers
         for identifier, visualizer in self._visualizers:
+            pyutils.tic(identifier)
             if identifier in visualizer_args:
                 visualizer.apply(self._painter, visualizer_args[identifier])
             else:
                 visualizer.apply(self._painter)
+            pyutils.toc(identifier)
 
         # Return the visualization result (RGBA) as RGB image
-        return np.array(self._painter.canvas.to_channels(3), copy=True)
+        #res = np.array(self._painter.canvas.to_channels(3), copy=True)
+        res = np.array(self._painter.canvas, copy=True)
+        return res[:, :, :3]

@@ -8,6 +8,9 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'version.py')
     exec(_vf.read())
 
 # Text overlays & utils
-from cvvis2d.text import frame_label, TextOverlay, StaticTextOverlay
+from cvvis2d.text import frame_label, DynamicTextOverlay, StaticTextOverlay
 # Image overlays
 from cvvis2d.image import ImageOverlay
+
+# from cvvis2d.pinhole import
+from cvvis2d.detection import BoundingBox2d, BoundingBox2dOverlay, create_bounding_box

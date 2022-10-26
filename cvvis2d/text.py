@@ -1,7 +1,7 @@
-from turtle import pos
 from typing import Any, List, Union
 import viren2d
 import datetime
+from cvvis2d.utils import compute_absolute_canvas_position
 
 
 def frame_label(
@@ -24,59 +24,68 @@ def frame_label(
     return lbl
 
 
-class TextOverlay(object):
+class DynamicTextOverlay(object):
     """
     Draws text/a text box at a predefined location within the image.
 
-    Can be used to overlay time, frame number, camera label, etc.
+    The text has to be provided for each image separately. Thus, this
+    visualizer can be used to overlay time, frame number, camera label, etc.
+    To overlay a static text (text that will never change), use
+    `StaticTextOverlay` instead.
 
-    TODO document parametrization
+    Args:
+      position: Absolute (coordinates > 1 or < -1) or
+        relative (-1 <= coordinates <= 1) position of the
+        anchor point within the canvas.
+      anchor: How to align the text w.r.t. the anchor point. Can be either
+        a viren2d.Anchor enum value or its string representation, e.g. 'top'.
+      text_style: How to render the glyphs.
+      line_style: If valid, a border will be drawn around the text.
+      fill_color: If valid, the background behind the text will be colored.
+      padding: Distance between the text box edge and the glyphs.
+      rotation: Rotation angle in degrees.
+      corner_radius: If > 0 (and < 0.5), the text box will be drawn with
+        rounded corners.
     """
     def __init__(self):
+        self.position = viren2d.Vec2d(0.5, 10)
+        self.anchor = viren2d.Anchor.Top
         self.text_style = viren2d.TextStyle(
-            family='monospace', size=14, color='#1a1c1d',
+            family='monospace', size=14, color='navy-blue',
             bold=False, italic=False)
         self.line_style = viren2d.LineStyle.Invalid
         self.fill_color = viren2d.Color(1, 1, 1, 0.8)
-        self.position = viren2d.Vec2d(0.5, 10)
-        self.anchor = viren2d.Anchor.Top
         self.padding = viren2d.Vec2d(5, 5)
+        self.rotation = 0
         self.corner_radius = 0.2
     
     def apply(
             self, painter: viren2d.Painter,
             text: Union[str, List[str]]) -> bool:
-        # If position is negative, we compute the position based on the
-        # image/canvas dimension (i.e. going "back" from the opposite border).
-        # If position is specified as a fraction of the image/canvas size,
-        # we compute the absolute values.
-        position = self.position
-        if position[0] < 0:
-            if position[0] >= -1.0:
-                position[0] = painter.width + position[0] * painter.width
-            else:
-                position[0] = painter.width + position[0]
-        elif position[0] <= 1.0:
-            position[0] *= painter.width
-
-        if position[1] < 0:
-            if position[1] >= -1.0:
-                position[1] = painter.height + position[1] * painter.height
-            else:
-                position[1] = painter.height + position[1]
-        elif position[1] <= 1.0:
-            position[1] *= painter.height
+        position = compute_absolute_canvas_position(
+            self.position, painter.width, painter.height)
 
         return painter.draw_text_box(
             text=[text] if isinstance(text, str) else text,
             position=position, anchor=self.anchor,
-            text_style=self.text_style, padding=self.padding, rotation=0,
-            line_style=self.line_style, fill_color=self.fill_color,
-            radius=self.corner_radius)
+            text_style=self.text_style, padding=self.padding,
+            rotation=self.rotation, line_style=self.line_style,
+            fill_color=self.fill_color, radius=self.corner_radius)
 
 
-class StaticTextOverlay(TextOverlay):
-    #TODO document (useful if your text never changes)
+class StaticTextOverlay(DynamicTextOverlay):
+    """
+    Draws a static (never changing) text/a text box at a predefined
+    location within the image.
+
+    Useful to overlay camera labels, sequence names, etc.
+
+    See `DynamicTextOverlay` for the general parametrization (text style,
+    positioning, etc.).
+    In addition, this class simply provides a `text` attribute which
+    holds the text to be displayed.
+    """
+
     def __init__(self):
         super().__init__()
         self.position = viren2d.Vec2d(-10, 10)

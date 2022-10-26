@@ -1,4 +1,6 @@
 import viren2d
+import numpy as np
+from cvvis2d.utils import compute_absolute_canvas_position
 
 
 class ImageOverlay(object):
@@ -7,47 +9,36 @@ class ImageOverlay(object):
 
     Can be used to overlay depth maps, etc.
 
-    TODO document parametrization
+    Args:
+      position: Absolute (coordinates > 1 or < -1) or
+        relative (-1 <= coordinates <= 1) position of the
+        anchor point within the canvas.
+      anchor: How to align the image w.r.t. the anchor point. Can be either
+        a viren2d.Anchor enum value or its string representation, e.g. 'top'.
+      scale: Scaling factor for the x and y directions.
+      rotation: Rotation angle in degrees.
+      alpha: Opacity value from 0 (fully transparent) to 1 (fully opaque).
+      line_style: If valid, a border will be drawn around the overlay.
+      clip_factor: If > 0, the corners will be rounded.
     """
-    pass
-    # def __init__(self):
-    #     self.text_style = viren2d.TextStyle(
-    #         family='monospace', size=14, color='#1a1c1d',
-    #         bold=False, italic=False)
-    #     self.line_style = viren2d.LineStyle.Invalid
-    #     self.fill_color = viren2d.Color(1, 1, 1, 0.8)
-    #     self.position = viren2d.Vec2d(0.5, 10)
-    #     self.anchor = viren2d.Anchor.Top
-    #     self.padding = viren2d.Vec2d(5, 5)
-    #     self.corner_radius = 0.2
-    
-    # def apply(
-    #         self, painter: viren2d.Painter,
-    #         text: Union[str, List[str]]) -> bool:
-    #     # If position is negative, we compute the position based on the
-    #     # image/canvas dimension (i.e. going "back" from the opposite border).
-    #     # If position is specified as a fraction of the image/canvas size,
-    #     # we compute the absolute values.
-    #     position = self.position
-    #     if position[0] < 0:
-    #         if position[0] >= -1.0:
-    #             position[0] = painter.width + position[0] * painter.width
-    #         else:
-    #             position[0] = painter.width + position[0]
-    #     elif position[0] <= 1.0:
-    #         position[0] *= painter.width
 
-    #     if position[1] < 0:
-    #         if position[1] >= -1.0:
-    #             position[1] = painter.height + position[1] * painter.height
-    #         else:
-    #             position[1] = painter.height + position[1]
-    #     elif position[1] <= 1.0:
-    #         position[1] *= painter.height
+    def __init__(self):
+        self.position = viren2d.Vec2d(-5, -5)
+        self.anchor = viren2d.Anchor.BottomRight
+        self.scale = viren2d.Vec2d(1, 1)
+        self.rotation = 0
+        self.alpha = 0.8
+        self.line_style = viren2d.LineStyle.Invalid
+        self.clip_factor = 0.2
 
-    #     return painter.draw_text_box(
-    #         text=[text] if isinstance(text, str) else text,
-    #         position=position, anchor=self.anchor,
-    #         text_style=self.text_style, padding=self.padding, rotation=0,
-    #         line_style=self.line_style, fill_color=self.fill_color,
-    #         radius=self.corner_radius)
+    def apply(
+            self, painter: viren2d.Painter,
+            image: np.ndarray) -> bool:
+        position = compute_absolute_canvas_position(
+            self.position, painter.width, painter.height)
+
+        return painter.draw_image(
+            image=image, position=position, anchor=self.anchor,
+            alpha=self.alpha, scale_x=self.scale[0], scale_y=self.scale[1],
+            rotation=self.rotation, clip_factor=self.clip_factor,
+            line_style=self.line_style)
