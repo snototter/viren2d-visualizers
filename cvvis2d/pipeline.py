@@ -75,10 +75,6 @@ class VisualizationPipeline(object):
             return None
 
         pyutils.tic('painter-setup')
-        # Suppress viren2d warnings if we have non-contiguous or non-mutable inputs:
-        # copy = True if (not image.flags.c_contiguous) or (not image.flags.writeable) else False
-        # buffer = viren2d.ImageBuffer(image, copy)
-        # self._painter.set_canvas_image(buffer)
         self._painter.set_canvas_image(image)
         pyutils.toc('painter-setup')
 

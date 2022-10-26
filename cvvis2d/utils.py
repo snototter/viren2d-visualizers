@@ -40,7 +40,13 @@ def compute_absolute_padding(
         padding: viren2d.Vec2d,
         width: int, height: int) -> viren2d.Vec2d:
     """
-    TODO doc
+    Computes the absolute padding values if they were specified as fraction
+    of the reference dimensions (width & height).
+
+    To be used for drawing text, as this should not intersect the rounded
+    corners of the enclosing text box/bounding box. This could happen if the
+    corner radius is specified as fraction of the box size, but the padding
+    would be absolute (and the box size would be rather large...)
     """
     pad = viren2d.Vec2d(padding)
     if pad[0] <= 1.0:
