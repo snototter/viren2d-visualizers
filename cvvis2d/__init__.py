@@ -12,5 +12,5 @@ from cvvis2d.text import frame_label, DynamicTextOverlay, StaticTextOverlay
 # Image overlays
 from cvvis2d.image import ImageOverlay
 
-# from cvvis2d.pinhole import
 from cvvis2d.detection import BoundingBox2d, BoundingBox2dOverlay, create_bounding_box
+from cvvis2d.pinhole import CameraPoseOverlay, TagPoseOverlay

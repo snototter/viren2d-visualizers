@@ -1,4 +1,4 @@
 git+https://github.com/snototter/viren2d-visualizers.git
 opencv-python
 vito
-
+apriltag
