@@ -34,8 +34,8 @@ class DynamicTextOverlay(object):
     `StaticTextOverlay` instead.
 
     Args:
-      position: Absolute (coordinates > 1 or < -1) or
-        relative (-1 <= coordinates <= 1) position of the
+      position: Absolute (*i.e.* coordinates > 1 or < -1) or
+        relative (*i.e.* -1 <= coordinates <= 1) position of the
         anchor point within the canvas.
       anchor: How to align the text w.r.t. the anchor point. Can be either
         a viren2d.Anchor enum value or its string representation, e.g. 'top'.
@@ -81,12 +81,11 @@ class StaticTextOverlay(DynamicTextOverlay):
 
     Useful to overlay camera labels, sequence names, etc.
 
-    See `DynamicTextOverlay` for the general parametrization (text style,
-    positioning, etc.).
+    See :class:`DynamicTextOverlay` for the general parametrization (text
+    style, positioning, etc.).
     In addition, this class simply provides a `text` attribute which
     holds the text to be displayed.
     """
-
     def __init__(self):
         super().__init__()
         self.position = viren2d.Vec2d(-10, 10)

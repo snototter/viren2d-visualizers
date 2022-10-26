@@ -14,6 +14,10 @@ def _to_str_list(label: Union[str, List[str]]) -> List[str]:
 
 
 class BoundingBox2d(object):
+    """
+    Encapsulates a bounding box for visualization, *i.e.* box coordinates and
+    corresponding label(s).
+    """
     def __init__(
             self, left: float, top: float, width: float, height: float,
             color: viren2d.Color, label_top: str, label_bottom: str,
@@ -74,6 +78,7 @@ class BoundingBox2d(object):
 def create_bounding_box(
         class_id: Union[str, int], left: float, top: float,
         width: float, height: float, score: float) -> BoundingBox2d:
+    """TODO document (default bounding box/label from id, l, t, w, h & score"""
     if isinstance(class_id, str):
         label_top = class_id
         color = viren2d.Color.from_object_category(str(class_id))
@@ -119,7 +124,6 @@ class BoundingBox2dOverlay(object):
             text_fill_color=self.text_fill_color,
             label_padding=self.label_padding,
             clip_label=self.clip_label)
-        
 
         success = True
         for box in detections:

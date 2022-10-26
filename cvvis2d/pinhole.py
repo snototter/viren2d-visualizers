@@ -6,8 +6,17 @@ from typing import List, Tuple
 
 
 class CameraPoseOverlay(object):
-    """TODO documentation
-    params: (K, R, t, label)
+    """
+    Overlays arrows indicating the origin and orientation of the world's
+    coordinate reference frame.
+
+    The pose parameters for :meth:`apply` must be provided as
+    ``tuple(K, R, t, label)```, *i.e.* the intrinsic camera matrix ``K``, the
+    extrinsic transformation (rotation matrix ``R`` and translation
+    vector ``t``) and an optional text/label, which will be drawn at the
+    origin (unless it is set to None).
+
+    TODO document style attributes
     """
     def __init__(self):
         self.origin = viren2d.Vec3d(0, 0, 0)
@@ -53,13 +62,26 @@ class CameraPoseOverlay(object):
 
 
 class TagPoseOverlay(CameraPoseOverlay):
-    """TODO params: K, List of R,t,label"""
+    """
+    Overlays arrows indicating the pose of detected calibration targets.
+
+    This class extends the :class:`CameraPoseOverlay` to support drawing
+    multiple poses per invocation. Refer to the base class for a description
+    of the style parameters.
+
+    The pose parameters for :meth:`apply` must be provided as
+    ``tuple(K, list(tuple(R1, t1, label1), tuple(R2, t2, label2), ...))```,
+    *i.e.* provide the intrinsic camera matrix ``K`` once, and the extrinsic
+    transformation (rotation matrix ``R`` and translation vector ``t``) w.r.t.
+    to each tag (incl. an optional tag text/label, which will be drawn at the
+    tag's origin unless it is set to None).
+    """
     def __init__(self):
         super().__init__()
     
     def apply(
             self, painter: viren2d.Painter,
-            params: Tuple[np.ndarray, Tuple[np.ndarray, np.ndarray, str]]) -> bool:
+            params: Tuple[np.ndarray, List[Tuple[np.ndarray, np.ndarray, str]]]) -> bool:
         K, poses = params
         success = True
         for R, t, label in poses:
