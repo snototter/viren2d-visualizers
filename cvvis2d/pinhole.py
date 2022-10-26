@@ -2,11 +2,13 @@ import numpy as np
 import viren2d
 from typing import List, Tuple
 
-#TODO axis overlay
 #TODO ground plane overlay
 
 
 class CameraPoseOverlay(object):
+    """TODO documentation
+    params: (K, R, t, label)
+    """
     def __init__(self):
         self.origin = viren2d.Vec3d(0, 0, 0)
         self.arrow_lengths = viren2d.Vec3d(1e3, 1e3, 1e3)
@@ -38,7 +40,7 @@ class CameraPoseOverlay(object):
             arrow_style=self.arrow_style, color_x=self.color_x,
             color_y=self.color_y, color_z=self.color_z)
         
-        if label is not None:
+        if (label is not None) and (len(label) > 0):
             res = painter.draw_text_box(
                 text=[label], position=origin, anchor=self.text_anchor,
                 text_style=self.text_style, padding=self.text_padding,

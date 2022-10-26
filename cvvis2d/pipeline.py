@@ -26,6 +26,8 @@ class VisualizationPipeline(object):
     >>>     vis = visualizer.visualize(image, {'frame-label': 'Some text'})
 
     #TODO add tracking-by-detection or camera geometry/calibration example
+
+    #FIXME remove timing code before release
     """
     def __init__(self):
         # The painter will be passed on to each visualizer
