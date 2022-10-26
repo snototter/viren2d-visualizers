@@ -65,12 +65,13 @@ class DynamicTextOverlay(object):
         position = compute_absolute_canvas_position(
             self.position, painter.width, painter.height)
 
-        return painter.draw_text_box(
+        rect = painter.draw_text_box(
             text=[text] if isinstance(text, str) else text,
             position=position, anchor=self.anchor,
             text_style=self.text_style, padding=self.padding,
             rotation=self.rotation, line_style=self.line_style,
             fill_color=self.fill_color, radius=self.corner_radius)
+        return rect.is_valid()
 
 
 class StaticTextOverlay(DynamicTextOverlay):

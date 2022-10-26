@@ -91,9 +91,13 @@ class VisualizationPipeline(object):
         for identifier, visualizer in self._visualizers:
             pyutils.tic(identifier)
             if identifier in visualizer_args:
-                visualizer.apply(self._painter, visualizer_args[identifier])
+                success = visualizer.apply(
+                    self._painter, visualizer_args[identifier])
             else:
-                visualizer.apply(self._painter)
+                success = visualizer.apply(self._painter)
+            if not success:
+                logging.warning(
+                    f'Visualizer "{identifier}" could not be applied properly - check the previous log messages.')
             pyutils.toc(identifier)
 
         # Return the visualization result (RGBA) as RGB image
